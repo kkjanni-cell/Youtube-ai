@@ -7,7 +7,9 @@ import os
 # ADD YOUR API KEY HERE
 # -----------------------------
 
-API_KEY = "AIzaSyBGqdei-_S4ODNaP6Ga4FhTb67Xb4dio3U"
+import os
+
+API_KEY = os.getenv("YOUTUBE_API_KEY")
 
 
 # -----------------------------
