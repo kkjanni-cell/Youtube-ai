@@ -7,8 +7,11 @@ on:
   workflow_dispatch:
 
 
-jobs:
+permissions:
+  contents: write
 
+
+jobs:
   track:
 
     runs-on: ubuntu-latest
