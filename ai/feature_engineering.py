@@ -1,35 +1,97 @@
+import sqlite3
 import pandas as pd
 
-# Read the tracker
-df = pd.read_csv("Tracker.csv")
+DB_PATH = "database/youtube.db"
 
-# Clean numeric columns
-df["Views"] = df["Views"].astype(str).str.replace(",", "", regex=False).astype(int)
-df["Count"] = df["Count"].astype(str).str.replace(",", "", regex=False).astype(int)
+# -----------------------
+# LOAD DATA
+# -----------------------
 
-# Convert Time
-df["Time"] = pd.to_datetime(df["Time"], format="%H:%M:%S")
+conn = sqlite3.connect(DB_PATH)
 
-# Sort from oldest to newest
-df = df.sort_values("Time").reset_index(drop=True)
+query = """
+SELECT
+    video_id,
+    video_name,
+    timestamp,
+    views,
+    view_gain,
+    likes,
+    comments
+FROM view_history
+ORDER BY timestamp
+"""
 
-# ---------- Features ----------
+df = pd.read_sql_query(query, conn)
 
-df["Growth_1min"] = df["Views"].diff()
+conn.close()
 
-df["Growth_5min"] = df["Growth_1min"].rolling(5).mean()
+# -----------------------
+# CLEAN DATA
+# -----------------------
 
-df["Growth_15min"] = df["Growth_1min"].rolling(15).mean()
+df["timestamp"] = pd.to_datetime(df["timestamp"])
 
-df["Acceleration"] = df["Growth_1min"].diff()
+df = df.sort_values(
+    ["video_name", "timestamp"]
+).reset_index(drop=True)
 
-df["Minutes"] = range(len(df))
+# -----------------------
+# FEATURE ENGINEERING
+# -----------------------
+
+# Views gained since previous record
+df["growth_1_record"] = (
+    df.groupby("video_name")["views"]
+      .diff()
+)
+
+# Average growth over last 5 records
+df["growth_5_records"] = (
+    df.groupby("video_name")["growth_1_record"]
+      .transform(lambda x: x.rolling(5, min_periods=1).mean())
+)
+
+df["growth_15_records"] = (
+    df.groupby("video_name")["growth_1_record"]
+      .transform(lambda x: x.rolling(15, min_periods=1).mean())
+)
+
+# Growth acceleration
+df["acceleration"] = (
+    df.groupby("video_name")["growth_1_record"]
+      .diff()
+)
+
+# Like ratio
+df["like_ratio"] = (
+    df["likes"] / df["views"]
+)
+
+# Comment ratio
+df["comment_ratio"] = (
+    df["comments"] / df["views"]
+)
+
+# Hours since tracking started
+df["hours_from_start"] = (
+    df.groupby("video_name")["timestamp"]
+      .transform(lambda x: (x - x.min()).dt.total_seconds() / 3600)
+)
 
 # Remove rows with missing values
-df = df.dropna()
+df = df.dropna().reset_index(drop=True)
 
-# Save
-df.to_csv("processed_data.csv", index=False)
+# -----------------------
+# SAVE
+# -----------------------
 
-print("✅ processed_data.csv created")
-print("Rows:", len(df))
+df.to_csv(
+    "data/processed_data.csv",
+    index=False
+)
+
+print("✅ Feature engineering completed")
+print(f"Rows: {len(df)}")
+
+print(df.head())

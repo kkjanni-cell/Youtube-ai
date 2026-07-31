@@ -1,51 +1,72 @@
 import pandas as pd
 
-PREDICTION_HORIZON = 120  # minutes
+# -----------------------------------
+# SETTINGS
+# -----------------------------------
 
-# Load prepared data
-df = pd.read_csv("prepared_data.csv")
+PREDICTION_HORIZON = 2  # Number of future records
 
-# -----------------------------
-# Feature Engineering
-# -----------------------------
+# -----------------------------------
+# LOAD PROCESSED DATA
+# -----------------------------------
 
-df["Growth_1m"] = df["Views"].diff()
-df["Growth_5m"] = df["Growth_1m"].rolling(5).mean()
-df["Growth_15m"] = df["Growth_1m"].rolling(15).mean()
-df["Growth_30m"] = df["Views"] - df["Views"].shift(30)
-df["Acceleration"] = df["Growth_1m"].diff()
+df = pd.read_csv("data/processed_data.csv")
 
-# Remove missing values
-df = df.dropna().reset_index(drop=True)
+# -----------------------------------
+# TARGET
+# -----------------------------------
 
+df["target_views"] = (
+    df.groupby("video_name")["views"]
+      .shift(-PREDICTION_HORIZON)
+)
 
-df["Target_Views"] = df["Views"].shift(-PREDICTION_HORIZON)
-df["Target_Gain"] = df["Target_Views"] - df["Views"]
+df["target_gain"] = (
+    df["target_views"] - df["views"]
+)
+
 # Remove rows without future values
 df = df.dropna().reset_index(drop=True)
 
-# Add horizon
-df["Horizon"] = PREDICTION_HORIZON
+# Horizon feature
+df["prediction_horizon"] = PREDICTION_HORIZON
 
-# Keep only useful columns
-training_df = df[
-    [
-        "Minute",
-        "Views",
-        "Growth_1m",
-        "Growth_5m",
-        "Growth_15m",
-        "Growth_30m",
-        "Acceleration",
-        "Horizon",
-        "Target_Views",
-        "Target_Gain"
-    ]
+# -----------------------------------
+# FEATURES
+# -----------------------------------
+
+FEATURES = [
+    "hours_from_start",
+    "views",
+    "growth_1_record",
+    "growth_5_records",
+    "growth_15_records",
+    "acceleration",
+    "like_ratio",
+    "comment_ratio",
+    "prediction_horizon"
 ]
 
-training_df.to_csv("training_dataset.csv", index=False)
+TARGETS = [
+    "target_views",
+    "target_gain"
+]
 
-print("\n✅ Training dataset created!")
-print("Rows:", len(training_df))
-print()
+training_df = df[
+    FEATURES + TARGETS
+]
+
+# -----------------------------------
+# SAVE
+# -----------------------------------
+
+training_df.to_csv(
+    "data/training_dataset.csv",
+    index=False
+)
+
+print("✅ Training dataset created")
+
+print(f"Rows: {len(training_df)}")
+
 print(training_df.head())

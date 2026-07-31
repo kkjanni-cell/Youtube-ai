@@ -1,34 +1,51 @@
+import sqlite3
 import pandas as pd
 
-# Read tracker
-df = pd.read_csv("Tracker.csv")
+DB_PATH = "database/youtube.db"
 
-# Clean numbers
-df["Views"] = (
-    df["Views"]
-    .astype(str)
-    .str.replace(",", "", regex=False)
-    .astype(int)
+conn = sqlite3.connect(DB_PATH)
+
+query = """
+SELECT
+    video_id,
+    video_name,
+    timestamp,
+    views,
+    view_gain,
+    likes,
+    comments
+FROM view_history
+ORDER BY timestamp
+"""
+
+df = pd.read_sql_query(query, conn)
+
+conn.close()
+
+# Convert timestamp
+df["timestamp"] = pd.to_datetime(df["timestamp"])
+
+# Sort
+df = df.sort_values(
+    ["video_name", "timestamp"]
+).reset_index(drop=True)
+
+# Minutes since first record for each video
+df["minutes_from_start"] = (
+    df.groupby("video_name")["timestamp"]
+      .transform(lambda x: (x - x.min()).dt.total_seconds() / 60)
 )
 
-df["Count"] = (
-    df["Count"]
-    .astype(str)
-    .str.replace(",", "", regex=False)
-    .astype(int)
+# Hours since first record
+df["hours_from_start"] = (
+    df["minutes_from_start"] / 60
 )
-
-df["Time"] = df["Time"].astype(str)
-
-# Oldest first
-df = df.sort_values("Time").reset_index(drop=True)
-
-# Minute since upload
-df["Minute"] = range(len(df))
 
 print(df.head())
 
-# Save
-df.to_csv("prepared_data.csv", index=False)
+df.to_csv(
+    "data/prepared_data.csv",
+    index=False
+)
 
-print(f"\n✅ Prepared {len(df)} rows")
+print(f"\n✅ Prepared {len(df)} records")

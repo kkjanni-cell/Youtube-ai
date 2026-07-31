@@ -6,27 +6,37 @@ from sklearn.metrics import mean_absolute_error, r2_score
 
 from xgboost import XGBRegressor
 
-# Load training data
-df = pd.read_csv("training_dataset.csv")
+# -----------------------
+# LOAD TRAINING DATA
+# -----------------------
 
-# Features
+df = pd.read_csv("data/training_dataset.csv")
+
+# -----------------------
+# FEATURES
+# -----------------------
+
 FEATURES = [
-    "Minute",
-    "Views",
-    "Growth_1m",
-    "Growth_5m",
-    "Growth_15m",
-    "Growth_30m",
-    "Acceleration",
-    "Horizon"
+    "hours_from_start",
+    "views",
+    "growth_1_record",
+    "growth_5_records",
+    "growth_15_records",
+    "acceleration",
+    "like_ratio",
+    "comment_ratio",
+    "prediction_horizon"
 ]
 
 X = df[FEATURES]
 
-# Predict future gain
-y = df["Target_Gain"]
+# Predict future view gain
+y = df["target_gain"]
 
-# Train/Test Split
+# -----------------------
+# TRAIN / TEST SPLIT
+# -----------------------
+
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -34,33 +44,45 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-# Model
+# -----------------------
+# MODEL
+# -----------------------
+
 model = XGBRegressor(
-    n_estimators=300,
+    n_estimators=500,
     learning_rate=0.05,
-    max_depth=5,
+    max_depth=6,
     subsample=0.8,
     colsample_bytree=0.8,
     random_state=42
 )
 
-# Train
+# -----------------------
+# TRAIN
+# -----------------------
+
 model.fit(X_train, y_train)
 
-# Predict
+# -----------------------
+# EVALUATE
+# -----------------------
+
 predictions = model.predict(X_test)
 
-# Metrics
 mae = mean_absolute_error(y_test, predictions)
 r2 = r2_score(y_test, predictions)
 
-print("\n============================")
+print("\n==============================")
 print("MODEL RESULTS")
-print("============================")
-print(f"Mean Absolute Error : {mae:,.0f} views")
-print(f"R² Score            : {r2:.4f}")
+print("==============================")
+print(f"Rows Used          : {len(df)}")
+print(f"Mean Absolute Error: {mae:,.2f}")
+print(f"R² Score           : {r2:.4f}")
 
-# Save model
-joblib.dump(model, "youtube_predictor.pkl")
+# -----------------------
+# SAVE MODEL
+# -----------------------
 
-print("\n✅ Model saved as youtube_predictor.pkl")
+joblib.dump(model, "models/youtube_predictor.pkl")
+
+print("\n✅ Model saved successfully!")
