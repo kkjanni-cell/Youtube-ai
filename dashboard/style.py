@@ -23,42 +23,46 @@ html, body, [class*="css"]{
 }
 
 
-/* Hide Streamlit Header */
-
-header{
-    visibility:hidden;
-}
+/* Hide Streamlit Footer */
 
 footer{
     visibility:hidden;
 }
 
 
-/* -----------------------------
-Titles
-------------------------------*/
+/* -----------------------------------
+Hero
+------------------------------------*/
 
-.main-title{
+.hero-title{
 
-    font-size:40px;
+    font-size:48px;
 
     font-weight:800;
 
     color:#111827;
 
-    margin-bottom:5px;
+    margin-top:10px;
+
+    margin-bottom:10px;
 
 }
 
-.sub-title{
+
+.hero-subtitle{
+
+    font-size:18px;
 
     color:#6B7280;
 
-    font-size:16px;
+    max-width:850px;
 
-    margin-bottom:30px;
+    line-height:1.7;
+
+    margin-bottom:40px;
 
 }
+
 
 
 /* -----------------------------
@@ -74,7 +78,6 @@ Glass KPI Card
     padding:22px;
 
     box-shadow:
-
         0 10px 25px rgba(0,0,0,.06);
 
     border:1px solid rgba(0,0,0,.04);
@@ -83,15 +86,16 @@ Glass KPI Card
 
 }
 
+
 .metric-card:hover{
 
     transform:translateY(-4px);
 
     box-shadow:
-
         0 20px 40px rgba(0,0,0,.08);
 
 }
+
 
 
 /* KPI Title */
@@ -131,6 +135,7 @@ Glass KPI Card
 }
 
 
+
 /* -----------------------------
 Section Title
 ------------------------------*/
@@ -148,6 +153,7 @@ Section Title
 }
 
 
+
 /* -----------------------------
 Chart Container
 ------------------------------*/
@@ -160,11 +166,96 @@ Chart Container
 
     border-radius:20px;
 
-    box-shadow:0 8px 18px rgba(0,0,0,.05);
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.05);
 
     margin-bottom:20px;
 
 }
+
+
+
+/* -----------------------------
+Dashboard Filter
+------------------------------*/
+
+
+.filter-label{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:#374151;
+
+    margin-bottom:8px;
+
+}
+
+
+/* Selectbox wrapper */
+
+div[data-baseweb="select"]{
+
+    border-radius:12px;
+
+}
+
+
+
+/* Selectbox input */
+
+div[data-baseweb="select"] > div{
+
+    background:white;
+
+    border-radius:12px;
+
+    border:1px solid #E5E7EB;
+
+    min-height:42px;
+
+}
+
+
+
+/* -----------------------------
+Sidebar
+------------------------------*/
+
+section[data-testid="stSidebar"]{
+
+    background:#FFFFFF;
+
+    border-right:1px solid #E5E7EB;
+
+}
+
+
+section[data-testid="stSidebar"] .block-container{
+
+    padding-top:1.5rem;
+
+    padding-left:1rem;
+
+    padding-right:1rem;
+
+}
+
+
+
+/* -----------------------------
+Divider spacing
+------------------------------*/
+
+hr{
+
+    margin-top:35px;
+
+    margin-bottom:35px;
+
+}
+
 
 </style>
 """,

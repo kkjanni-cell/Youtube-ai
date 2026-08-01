@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from style import load_css
-
+from components.sidebar import show_sidebar
 from utils.database import load_data
 from utils.analytics import calculate_metrics
 
@@ -29,6 +29,7 @@ st.set_page_config(
 )
 
 load_css()
+show_sidebar()
 
 st.title("📺 Video Analytics")
 st.caption("Analyze the performance of an individual YouTube video")
