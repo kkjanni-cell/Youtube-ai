@@ -82,6 +82,8 @@ def get_latest_data(df):
         .reset_index(drop=True)
     )
 
+def get_total_snapshots(df):
+    return len(df)
 
 def get_last_update(df):
     return df["timestamp"].max()

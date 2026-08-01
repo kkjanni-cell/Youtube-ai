@@ -11,40 +11,54 @@ def show_sidebar():
 
     with st.sidebar:
 
-        st.markdown("# 📺 YouTube Analytics")
-        st.caption("Professional Dashboard")
-
-        st.divider()
-
-        # -----------------------------
-        # Tracker Status
-        # -----------------------------
+        # --------------------------------------------------
+        # LOAD DATA
+        # --------------------------------------------------
 
         df = load_data()
 
-
         if df.empty:
-            st.error("🔴 Tracker Offline")
+            status = "🔴 Offline"
+            status_class = "offline"
             last_update = "N/A"
             total_videos = 0
         else:
-            st.success("🟢 Tracker Online")
+            status = "🟢 Online"
+            status_class = "online"
             last_update = get_last_update(df)
             total_videos = get_total_videos(df)
 
-        st.caption("Last Update")
-        st.write(last_update)
+        # --------------------------------------------------
+        # LOGO
+        # --------------------------------------------------
 
-        st.caption("Tracked Videos")
-        st.write(f"**{total_videos}**")
+        st.markdown(
+            """
+            <div class="sidebar-logo">
+                🎬 <span>YouTube Analytics</span>
+            </div>
 
-        st.divider()
+            <div class="sidebar-subtitle">
+                Professional Dashboard
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        # -----------------------------
-        # Navigation
-        # -----------------------------
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-        st.markdown("### Navigation")
+        # --------------------------------------------------
+        # NAVIGATION
+        # --------------------------------------------------
+
+        st.markdown(
+            """
+            <div class="nav-title">
+                Navigation
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         st.page_link(
             "app.py",
@@ -55,7 +69,7 @@ def show_sidebar():
         st.page_link(
             "pages/1_Overview.py",
             label="Overview",
-            icon="📈",
+            icon="📊",
         )
 
         st.page_link(
@@ -67,7 +81,7 @@ def show_sidebar():
         st.page_link(
             "pages/3_Comparison.py",
             label="Comparison",
-            icon="📊",
+            icon="📈",
         )
 
         st.page_link(
@@ -76,7 +90,67 @@ def show_sidebar():
             icon="⚙️",
         )
 
-        st.divider()
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-        st.caption("Version 1.0")
-        st.caption("Built by Janni 🚀")
+        # --------------------------------------------------
+        # TRACKER STATUS
+        # --------------------------------------------------
+
+        st.markdown(
+            """
+            <div class="nav-title">
+                📡 Tracker Status
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <div class="tracker-card">
+
+                <div class="tracker-status {status_class}">
+                    {status}
+                </div>
+
+                <div class="tracker-item">
+                    <div class="tracker-label">
+                        Last Update
+                    </div>
+
+                    <div class="tracker-value">
+                        {last_update}
+                    </div>
+                </div>
+
+                <div class="tracker-item">
+                    <div class="tracker-label">
+                        Tracked Videos
+                    </div>
+
+                    <div class="tracker-value">
+                        {total_videos}
+                    </div>
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("<hr>", unsafe_allow_html=True)
+
+        # --------------------------------------------------
+        # FOOTER
+        # --------------------------------------------------
+
+        st.markdown(
+            """
+            <div class="sidebar-footer">
+                Version 1.0
+                <br><br>
+                Built by <b>Janni</b> 🚀
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )

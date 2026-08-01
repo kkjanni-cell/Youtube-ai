@@ -4,6 +4,9 @@ from style import load_css
 
 from components.sidebar import show_sidebar
 from components.cards import show_overview_cards
+from components.dashboard_summary import dashboard_summary
+from components.action_card import action_card
+from components.activity_card import activity_card
 
 from utils.database import (
     load_data,
@@ -13,8 +16,9 @@ from utils.database import (
     get_total_comments,
     get_last_update,
     get_latest_data,
+    get_top_growing_video,
+    get_total_snapshots,
 )
-
 
 # ---------------------------------------------------------
 # PAGE CONFIG
@@ -24,8 +28,8 @@ st.set_page_config(
     page_title="YouTube Analytics",
     page_icon="📺",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
-
 
 # ---------------------------------------------------------
 # LOAD
@@ -35,7 +39,6 @@ load_css()
 show_sidebar()
 
 df = load_data()
-
 
 # ---------------------------------------------------------
 # HERO
@@ -56,16 +59,13 @@ all in one professional dashboard.
     unsafe_allow_html=True,
 )
 
-
 st.write("")
 
-
 # ---------------------------------------------------------
-# LIVE KPI
+# LIVE PERFORMANCE
 # ---------------------------------------------------------
 
 st.subheader("📊 Live Performance")
-
 
 if not df.empty:
 
@@ -78,119 +78,90 @@ if not df.empty:
 
 else:
 
-    st.info(
-        "No tracking data available yet."
-    )
-
+    st.info("No tracking data available yet.")
 
 # ---------------------------------------------------------
-# TRACKER STATUS
+# DASHBOARD OVERVIEW
 # ---------------------------------------------------------
 
 st.divider()
 
-st.subheader("📈 Tracker Activity")
+st.subheader("📊 Dashboard Overview")
 
+if not df.empty:
 
-a, b = st.columns(2)
-
-
-with a:
-
-    if not df.empty:
-
-        st.success(
-            f"""
-            Last Update
-
-            {get_last_update(df)}
-            """
-        )
-
-    else:
-
-        st.warning(
-            "No data available"
-        )
-
-
-with b:
-
-    st.success(
-        """
-        🟢 Tracker Status
-
-        Tracking system is active
-        """
+    dashboard_summary(
+        tracker_status="🟢 Online",
+        last_update=get_last_update(df),
+        total_snapshots=get_total_snapshots(df),
+        top_video=get_top_growing_video(df),
     )
 
+else:
+
+    dashboard_summary(
+        tracker_status="🔴 Offline",
+        last_update="N/A",
+        total_snapshots=0,
+        top_video={
+            "video_name": "No Data",
+            "views": 0,
+            "view_gain": 0,
+            "likes": 0,
+        },
+    )
 
 # ---------------------------------------------------------
-# QUICK ACCESS
+# QUICK ACTIONS
 # ---------------------------------------------------------
 
 st.divider()
 
-st.subheader("🚀 Quick Navigation")
-
+st.subheader("⚡ Quick Actions")
 
 c1, c2 = st.columns(2)
 
-
 with c1:
 
-    st.info(
-        """
-### 📊 Overview
-
-View overall channel performance,
-top videos, latest snapshots,
-and growth statistics.
-"""
+    action_card(
+        "📊",
+        "Overview",
+        "View overall channel performance, latest statistics and growth trends.",
+        "pages/1_Overview.py",
     )
-
 
 with c2:
 
-    st.info(
-        """
-### 🎥 Video Analytics
-
-Deep dive into a video's
-views, likes, comments,
-and growth trends.
-"""
+    action_card(
+        "🎥",
+        "Video Analytics",
+        "Analyze video views, engagement and growth in detail.",
+        "pages/2_Video_Analytics.py",
     )
-
 
 c3, c4 = st.columns(2)
 
-
 with c3:
 
-    st.info(
-        """
-### 📈 Comparison
-
-Compare multiple videos
-side-by-side and identify
-top performers.
-"""
+    action_card(
+        "📈",
+        "Comparison",
+        "Compare multiple videos and identify top performers.",
+        "pages/3_Comparison.py",
     )
-
 
 with c4:
 
-    st.info(
-        """
-### ⚙️ Settings
-
-Configure your dashboard,
-API settings,
-and preferences.
-"""
+    action_card(
+        "⚙️",
+        "Settings",
+        "Manage dashboard preferences and application settings.",
+        "pages/4_Settings.py",
     )
 
+# ---------------------------------------------------------
+# RECENT ACTIVITY
+# ---------------------------------------------------------
 
 # ---------------------------------------------------------
 # RECENT ACTIVITY
@@ -198,36 +169,25 @@ and preferences.
 
 st.divider()
 
-st.subheader("📋 Recent Activity")
-
+st.subheader("🕒 Recent Activity")
 
 if not df.empty:
 
-    recent = get_latest_data(df).head(5)
-
-
-    st.dataframe(
-        recent[
-            [
-                "video_name",
-                "views",
-                "view_gain",
-                "likes",
-                "comments",
-                "timestamp",
-            ]
-        ],
-        use_container_width=True,
-        hide_index=True,
+    latest = (
+        get_latest_data(df)
+        .sort_values(
+            "timestamp",
+            ascending=False,
+        )
+        .head(5)
     )
 
+    for _, row in latest.iterrows():
+        activity_card(row)
 
 else:
 
-    st.info(
-        "No recent activity available"
-    )
-
+    st.info("No activity found.")
 
 # ---------------------------------------------------------
 # FOOTER
@@ -235,6 +195,4 @@ else:
 
 st.divider()
 
-st.caption(
-    "Built by Janni 🚀"
-)
+st.caption("Built by Janni 🚀")

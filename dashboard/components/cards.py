@@ -1,9 +1,6 @@
 import streamlit as st
+from components.kpi_card import kpi_card
 
-
-# ---------------------------------------------------------
-# OVERVIEW KPI CARDS
-# ---------------------------------------------------------
 
 def show_overview_cards(
     total_videos,
@@ -12,19 +9,43 @@ def show_overview_cards(
     total_comments,
 ):
 
-    col1, col2, col3, col4 = st.columns(4)
+    c1, c2, c3, c4 = st.columns(4)
 
-    with col1:
-        st.metric("🎥 Videos", total_videos)
+    with c1:
+    kpi_card(
+        "Videos",
+        f"{total_videos:,}",
+        "🎬",
+        "Tracking",
+        "#2563EB",
+    )
 
-    with col2:
-        st.metric("👀 Total Views", f"{total_views:,}")
+with c2:
+    kpi_card(
+        "Views",
+        f"{total_views:,}",
+        "👀",
+        "Live",
+        "#7C3AED",
+    )
 
-    with col3:
-        st.metric("❤️ Total Likes", f"{total_likes:,}")
+with c3:
+    kpi_card(
+        "Likes",
+        f"{total_likes:,}",
+        "❤️",
+        "Updated",
+        "#EC4899",
+    )
 
-    with col4:
-        st.metric("💬 Total Comments", f"{total_comments:,}")
+with c4:
+    kpi_card(
+        "Comments",
+        f"{total_comments:,}",
+        "💬",
+        "Realtime",
+        "#F59E0B",
+    )
 
 
 # ---------------------------------------------------------
