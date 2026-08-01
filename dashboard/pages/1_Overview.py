@@ -15,7 +15,6 @@ from utils.database import (
 
 from style import load_css
 from components.cards import show_overview_cards 
-from components.hero import hero_video_card 
 
 st.set_page_config(
     page_title="Overview",
@@ -61,11 +60,23 @@ left, right = st.columns([2, 1])
 
 with left:
 
-  st.subheader("🔥 Featured Video")
+ st.subheader("🔥 Fastest Growing Video")
 
-  top = get_top_growing_video(df)
+top = get_top_growing_video(df)
 
-  hero_video_card(top) 
+st.success(
+    f"""
+**{top['video_name']}**
+
+📈 Latest Gain : **+{int(top['view_gain']):,} Views**
+
+👀 Total Views : **{int(top['views']):,}**
+
+❤️ Likes : **{int(top['likes']):,}**
+
+💬 Comments : **{int(top['comments']):,}**
+"""
+)
 (
    
         f"""
