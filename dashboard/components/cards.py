@@ -2,6 +2,10 @@ import streamlit as st
 from components.kpi_card import kpi_card
 
 
+# ---------------------------------------------------------
+# OVERVIEW KPI CARDS
+# ---------------------------------------------------------
+
 def show_overview_cards(
     total_videos,
     total_views,
@@ -12,40 +16,36 @@ def show_overview_cards(
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-    kpi_card(
-        "Videos",
-        f"{total_videos:,}",
-        "🎬",
-        "Tracking",
-        "#2563EB",
-    )
+        kpi_card(
+            "Videos",
+            f"{total_videos:,}",
+            "🎬",
+            color="#2563EB",
+        )
 
-with c2:
-    kpi_card(
-        "Views",
-        f"{total_views:,}",
-        "👀",
-        "Live",
-        "#7C3AED",
-    )
+    with c2:
+        kpi_card(
+            "Views",
+            f"{total_views:,}",
+            "👀",
+            color="#7C3AED",
+        )
 
-with c3:
-    kpi_card(
-        "Likes",
-        f"{total_likes:,}",
-        "❤️",
-        "Updated",
-        "#EC4899",
-    )
+    with c3:
+        kpi_card(
+            "Likes",
+            f"{total_likes:,}",
+            "❤️",
+            color="#EC4899",
+        )
 
-with c4:
-    kpi_card(
-        "Comments",
-        f"{total_comments:,}",
-        "💬",
-        "Realtime",
-        "#F59E0B",
-    )
+    with c4:
+        kpi_card(
+            "Comments",
+            f"{total_comments:,}",
+            "💬",
+            color="#F59E0B",
+        )
 
 
 # ---------------------------------------------------------
