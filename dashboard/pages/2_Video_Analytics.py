@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 from style import load_css
 
@@ -11,25 +12,30 @@ from components.cards import (
 )
 
 from components.charts import (
-    plot_views,
-    plot_view_gain,
-    plot_likes,
-    plot_comments,
+    views_chart,
+    gain_chart,
+    likes_chart,
+    comments_chart,
 )
+
+# ----------------------------------------------------
+# PAGE CONFIG
+# ----------------------------------------------------
 
 st.set_page_config(
     page_title="Video Analytics",
     page_icon="📺",
-    layout="wide"
+    layout="wide",
 )
 
 load_css()
 
 st.title("📺 Video Analytics")
+st.caption("Analyze the performance of an individual YouTube video")
 
-# ------------------------------------------------
+# ----------------------------------------------------
 # LOAD DATA
-# ------------------------------------------------
+# ----------------------------------------------------
 
 df = load_data()
 
@@ -37,78 +43,124 @@ if df.empty:
     st.warning("No tracking data available.")
     st.stop()
 
-# ------------------------------------------------
-# VIDEO SELECTOR
-# ------------------------------------------------
+# ----------------------------------------------------
+# FILTERS
+# ----------------------------------------------------
 
-videos = sorted(df["video_name"].unique())
+st.subheader("🔎 Filters")
 
-selected_video = st.selectbox(
-    "Select Video",
-    videos
-)
+col1, col2 = st.columns(2)
 
-video_df = (
-    df[df["video_name"] == selected_video]
-    .copy()
-)
+with col1:
+    selected = st.selectbox(
+        "Select Video",
+        sorted(df["video_name"].unique())
+    )
+
+with col2:
+    days = st.selectbox(
+        "Time Range",
+        [
+            "All",
+            "Last 24 Hours",
+            "Last 7 Days",
+            "Last 30 Days",
+        ]
+    )
+
+# ----------------------------------------------------
+# FILTER DATA
+# ----------------------------------------------------
+
+video_df = df[df["video_name"] == selected].copy()
+
+video_df["timestamp"] = pd.to_datetime(video_df["timestamp"])
+
+if days == "Last 24 Hours":
+    video_df = video_df[
+        video_df["timestamp"] >=
+        video_df["timestamp"].max() - pd.Timedelta(days=1)
+    ]
+
+elif days == "Last 7 Days":
+    video_df = video_df[
+        video_df["timestamp"] >=
+        video_df["timestamp"].max() - pd.Timedelta(days=7)
+    ]
+
+elif days == "Last 30 Days":
+    video_df = video_df[
+        video_df["timestamp"] >=
+        video_df["timestamp"].max() - pd.Timedelta(days=30)
+    ]
+
+video_df = video_df.sort_values("timestamp")
+
+if video_df.empty:
+    st.warning("No data available for the selected time range.")
+    st.stop()
+
+# ----------------------------------------------------
+# CALCULATE METRICS
+# ----------------------------------------------------
 
 metrics = calculate_metrics(video_df)
 
-# ------------------------------------------------
+# ----------------------------------------------------
 # KPI CARDS
-# ------------------------------------------------
+# ----------------------------------------------------
 
 show_kpi_cards(metrics)
 
 st.divider()
 
-# ------------------------------------------------
-# GROWTH CARDS
-# ------------------------------------------------
-
 show_growth_cards(metrics)
 
 st.divider()
 
-# ------------------------------------------------
-# CHARTS
-# ------------------------------------------------
+# ----------------------------------------------------
+# MAIN CHART
+# ----------------------------------------------------
 
-tab1, tab2, tab3, tab4 = st.tabs(
-    [
-        "📈 Views",
-        "📊 View Gain",
-        "❤️ Likes",
-        "💬 Comments",
-    ]
-)
-
-with tab1:
-    plot_views(video_df)
-
-with tab2:
-    plot_view_gain(video_df)
-
-with tab3:
-    plot_likes(video_df)
-
-with tab4:
-    plot_comments(video_df)
+views_chart(video_df)
 
 st.divider()
 
-# ------------------------------------------------
-# DATA TABLE
-# ------------------------------------------------
+# ----------------------------------------------------
+# SECOND ROW OF CHARTS
+# ----------------------------------------------------
 
-st.subheader("Tracking History")
+col1, col2 = st.columns(2)
+
+with col1:
+    gain_chart(video_df)
+
+with col2:
+    likes_chart(video_df)
+
+st.divider()
+
+# ----------------------------------------------------
+# COMMENTS CHART
+# ----------------------------------------------------
+
+comments_chart(video_df)
+
+st.divider()
+
+# ----------------------------------------------------
+# TRACKING HISTORY
+# ----------------------------------------------------
+
+st.subheader("📋 Recent Tracking History")
+
+history = video_df.sort_values(
+    "timestamp",
+    ascending=False
+)
 
 st.dataframe(
-    video_df.sort_values(
-        "timestamp",
-        ascending=False
-    ),
-    use_container_width=True,
+    history,
     hide_index=True,
+    use_container_width=True,
 )

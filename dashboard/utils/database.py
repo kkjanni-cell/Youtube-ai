@@ -177,3 +177,17 @@ def get_video_history(df, video_name):
         .sort_values("timestamp")
         .reset_index(drop=True)
     )
+
+def get_top_videos(df, limit=5):
+    """
+    Return the latest records for the top videos by current views.
+    """
+
+    latest = (
+        df.sort_values("timestamp")
+          .groupby("video_name")
+          .tail(1)
+          .sort_values("views", ascending=False)
+    )
+
+    return latest.head(limit)

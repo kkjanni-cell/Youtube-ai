@@ -1,11 +1,8 @@
-import plotly.express as px
 import streamlit as st
+import plotly.express as px
 
 
-def plot_views(video_df):
-    """
-    View growth over time.
-    """
+def views_chart(video_df):
 
     fig = px.line(
         video_df,
@@ -16,18 +13,14 @@ def plot_views(video_df):
     )
 
     fig.update_layout(
-        xaxis_title="Time",
-        yaxis_title="Views",
-        height=450,
+        height=400,
+        template="plotly_white",
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
 
-def plot_view_gain(video_df):
-    """
-    View gain per tracking interval.
-    """
+def gain_chart(video_df):
 
     fig = px.bar(
         video_df,
@@ -37,45 +30,44 @@ def plot_view_gain(video_df):
     )
 
     fig.update_layout(
-        xaxis_title="Time",
-        yaxis_title="Views Gained",
-        height=450,
+        height=350,
+        template="plotly_white",
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
 
-def plot_likes(video_df):
-    """
-    Likes over time.
-    """
+def likes_chart(video_df):
 
     fig = px.line(
         video_df,
         x="timestamp",
         y="likes",
         markers=True,
-        title="Likes Over Time",
+        title="Likes",
     )
 
-    fig.update_layout(height=450)
+    fig.update_layout(
+        height=350,
+        template="plotly_white",
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 
 
-def plot_comments(video_df):
-    """
-    Comments over time.
-    """
+def comments_chart(video_df):
 
     fig = px.line(
         video_df,
         x="timestamp",
         y="comments",
         markers=True,
-        title="Comments Over Time",
+        title="Comments",
     )
 
-    fig.update_layout(height=450)
+    fig.update_layout(
+        height=350,
+        template="plotly_white",
+    )
 
     st.plotly_chart(fig, use_container_width=True)

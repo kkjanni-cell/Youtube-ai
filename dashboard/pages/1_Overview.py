@@ -10,24 +10,27 @@ from utils.database import (
     get_last_update,
     get_top_growing_video,
     get_latest_data,
+    get_top_videos,
 )
 
 from style import load_css
+from components.cards import show_overview_cards 
+from components.hero import hero_video_card 
 
 st.set_page_config(
     page_title="Overview",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
 )
 
 load_css()
 
-st.title("📊 YouTube Analytics Platform")
-st.caption("Overall performance of all tracked videos")
+st.title("📊 YouTube Analytics Dashboard")
+st.caption("Real-time performance of all tracked YouTube videos")
 
-# ---------------------------------
+# -------------------------------------------------
 # LOAD DATA
-# ---------------------------------
+# -------------------------------------------------
 
 df = load_data()
 
@@ -35,59 +38,50 @@ if df.empty:
     st.warning("No tracking data available.")
     st.stop()
 
-# ---------------------------------
-# SUMMARY METRICS
-# ---------------------------------
+latest = get_latest_data(df)
 
-total_videos = get_total_videos(df)
-total_views = get_total_views(df)
-total_likes = get_total_likes(df)
-total_comments = get_total_comments(df)
+# -------------------------------------------------
+# KPI CARDS
+# -------------------------------------------------
+show_overview_cards(
+    get_total_videos(df),
+    get_total_views(df),
+    get_total_likes(df),
+    get_total_comments(df),
+)
 
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("🎥 Videos Tracked", total_videos)
-
-with col2:
-    st.metric("👀 Total Views", f"{total_views:,}")
-
-with col3:
-    st.metric("❤️ Total Likes", f"{total_likes:,}")
-
-with col4:
-    st.metric("💬 Total Comments", f"{total_comments:,}")
 
 st.divider()
 
-# ---------------------------------
-# SECOND ROW
-# ---------------------------------
+# -------------------------------------------------
+# DASHBOARD INFO
+# -------------------------------------------------
 
-col1, col2 = st.columns([2, 1])
+left, right = st.columns([2, 1])
 
-with col1:
+with left:
 
-    latest = get_latest_data(df)
+  st.subheader("🔥 Featured Video")
 
-    st.subheader("📋 Latest Video Statistics")
+  top = get_top_growing_video(df)
 
-    st.dataframe(
-        latest[
-            [
-                "video_name",
-                "views",
-                "view_gain",
-                "likes",
-                "comments",
-                "timestamp",
-            ]
-        ],
-        use_container_width=True,
-        hide_index=True,
+  hero_video_card(top) 
+(
+   
+        f"""
+**{top['video_name']}**
+
+📈 Latest Gain : **+{int(top['view_gain']):,} Views**
+
+👀 Total Views : **{int(top['views']):,}**
+
+❤️ Likes : **{int(top['likes']):,}**
+
+💬 Comments : **{int(top['comments']):,}**
+"""
     )
 
-with col2:
+with right:
 
     st.subheader("📌 Dashboard Summary")
 
@@ -96,15 +90,54 @@ with col2:
         f"{get_total_view_gain(df):,}"
     )
 
-    top = get_top_growing_video(df)
-
-    st.metric(
-        "🚀 Top Growing Video",
-        top["video_name"],
-        delta=f'+{int(top["view_gain"]):,}'
-    )
-
     st.metric(
         "🕒 Last Updated",
         str(get_last_update(df))
     )
+
+st.divider()
+
+# -------------------------------------------------
+# TOP VIDEOS
+# -------------------------------------------------
+
+st.subheader("🏆 Top Videos")
+
+top_videos = get_top_videos(df)
+
+st.dataframe(
+    top_videos[
+        [
+            "video_name",
+            "views",
+            "view_gain",
+            "likes",
+            "comments",
+        ]
+    ],
+    hide_index=True,
+    use_container_width=True,
+)
+
+st.divider()
+
+# -------------------------------------------------
+# LATEST SNAPSHOT
+# -------------------------------------------------
+
+st.subheader("📋 Latest Snapshot")
+
+st.dataframe(
+    latest[
+        [
+            "video_name",
+            "views",
+            "view_gain",
+            "likes",
+            "comments",
+            "timestamp",
+        ]
+    ],
+    hide_index=True,
+    use_container_width=True,
+)

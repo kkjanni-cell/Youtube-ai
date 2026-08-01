@@ -1,5 +1,7 @@
 import streamlit as st
 
+from components.premium_cards import premium_kpi_card
+
 
 # ---------------------------------------------------------
 # OVERVIEW KPI CARDS
@@ -11,72 +13,35 @@ def show_overview_cards(
     total_likes,
     total_comments,
 ):
-    """
-    Dashboard overview KPI cards.
-    """
 
-    col1, col2, col3, col4 = st.columns(4)
+    c1, c2, c3, c4 = st.columns(4)
 
-    with col1:
-        st.metric(
-            "🎥 Videos",
-            total_videos
+    with c1:
+        premium_kpi_card(
+            title="Videos",
+            value=f"{total_videos:,}",
+            icon="🎥",
         )
 
-    with col2:
-        st.metric(
-            "👀 Total Views",
-            f"{total_views:,}"
+    with c2:
+        premium_kpi_card(
+            title="Total Views",
+            value=f"{total_views:,}",
+            icon="👀",
         )
 
-    with col3:
-        st.metric(
-            "❤️ Total Likes",
-            f"{total_likes:,}"
+    with c3:
+        premium_kpi_card(
+            title="Likes",
+            value=f"{total_likes:,}",
+            icon="❤️",
         )
 
-    with col4:
-        st.metric(
-            "💬 Total Comments",
-            f"{total_comments:,}"
-        )
-
-
-# ---------------------------------------------------------
-# VIDEO KPI CARDS
-# ---------------------------------------------------------
-
-def show_kpi_cards(metrics):
-    """
-    Individual video KPI cards.
-    """
-
-    latest = metrics["latest"]
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric(
-            "👀 Current Views",
-            f"{latest['views']:,}"
-        )
-
-    with col2:
-        st.metric(
-            "❤️ Likes",
-            f"{latest['likes']:,}"
-        )
-
-    with col3:
-        st.metric(
-            "💬 Comments",
-            f"{latest['comments']:,}"
-        )
-
-    with col4:
-        st.metric(
-            "📈 Latest Gain",
-            f"{latest['view_gain']:,}"
+    with c4:
+        premium_kpi_card(
+            title="Comments",
+            value=f"{total_comments:,}",
+            icon="💬",
         )
 
 

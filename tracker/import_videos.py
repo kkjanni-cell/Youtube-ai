@@ -2,6 +2,8 @@ import sqlite3
 import pandas as pd
 import os
 
+from youtube_api import get_video_details
+
 # -----------------------------
 # PATHS
 # -----------------------------
@@ -27,33 +29,36 @@ videos = pd.read_csv(CSV_PATH)
 print(f"\nFound {len(videos)} videos.\n")
 
 # -----------------------------
-# INSERT INTO DATABASE
+# IMPORT VIDEOS
 # -----------------------------
 
 for _, row in videos.iterrows():
 
+    video_id = row["video_id"]
+
+    details = get_video_details(video_id)
+
+    if details is None:
+        print(f"❌ Could not fetch {video_id}")
+        continue
+
     cursor.execute(
         """
-        INSERT OR IGNORE INTO videos
-        (video_id, video_name)
+        INSERT INTO videos (video_id, video_name)
         VALUES (?, ?)
+        ON CONFLICT(video_id)
+        DO UPDATE SET
+            video_name = excluded.video_name
         """,
         (
-            row["video_id"],
-            row["video_name"],
+            video_id,
+            details["title"],
         ),
     )
 
-    if cursor.rowcount == 1:
-        print(f"✅ Added: {row['video_name']}")
-    else:
-        print(f"ℹ️ Already exists: {row['video_name']}")
-
-# -----------------------------
-# SAVE & CLOSE
-# -----------------------------
+    print(f"✅ {details['title']}")
 
 conn.commit()
 conn.close()
 
-print("\n✅ Import completed successfully!")
+print("\nImport Complete.")
