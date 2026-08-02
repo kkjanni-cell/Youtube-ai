@@ -7,6 +7,12 @@ from components.cards import show_overview_cards
 from components.dashboard_summary import dashboard_summary
 from components.action_card import action_card
 from components.activity_card import activity_card
+from components.command_palette import (
+    initialize_command_palette,
+    render_command_palette
+)
+from components.admin_dialog import show_admin_dialog
+from operations.session import initialize_session
 
 from utils.database import (
     load_data,
@@ -20,9 +26,10 @@ from utils.database import (
     get_total_snapshots,
 )
 
-# ---------------------------------------------------------
+
+# =========================================================
 # PAGE CONFIG
-# ---------------------------------------------------------
+# =========================================================
 
 st.set_page_config(
     page_title="YouTube Analytics",
@@ -31,18 +38,25 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ---------------------------------------------------------
+
+# =========================================================
 # LOAD
-# ---------------------------------------------------------
+# =========================================================
 
 load_css()
+
+initialize_session()
+
+initialize_command_palette()
+
 show_sidebar()
 
 df = load_data()
 
-# ---------------------------------------------------------
+
+# =========================================================
 # HERO
-# ---------------------------------------------------------
+# =========================================================
 
 st.markdown(
     """
@@ -59,34 +73,46 @@ all in one professional dashboard.
     unsafe_allow_html=True,
 )
 
-st.write("")
 
-# ---------------------------------------------------------
+st.write("")
+# -----------------------------------------
+# TEMPORARY ADMIN BUTTON
+# -----------------------------------------
+
+if st.button("🛠 Admin Access"):
+
+    show_admin_dialog()
+
+# =========================================================
 # LIVE PERFORMANCE
-# ---------------------------------------------------------
+# =========================================================
 
 st.subheader("📊 Live Performance")
+
 
 if not df.empty:
 
     show_overview_cards(
-        get_total_videos(df),
-        get_total_views(df),
-        get_total_likes(df),
-        get_total_comments(df),
+        total_videos=get_total_videos(df),
+        total_views=get_total_views(df),
+        total_likes=get_total_likes(df),
+        total_comments=get_total_comments(df),
     )
 
 else:
 
     st.info("No tracking data available yet.")
 
-# ---------------------------------------------------------
+
+
+# =========================================================
 # DASHBOARD OVERVIEW
-# ---------------------------------------------------------
+# =========================================================
 
 st.divider()
 
 st.subheader("📊 Dashboard Overview")
+
 
 if not df.empty:
 
@@ -96,6 +122,7 @@ if not df.empty:
         total_snapshots=get_total_snapshots(df),
         top_video=get_top_growing_video(df),
     )
+
 
 else:
 
@@ -111,15 +138,19 @@ else:
         },
     )
 
-# ---------------------------------------------------------
+
+
+# =========================================================
 # QUICK ACTIONS
-# ---------------------------------------------------------
+# =========================================================
 
 st.divider()
 
 st.subheader("⚡ Quick Actions")
 
+
 c1, c2 = st.columns(2)
+
 
 with c1:
 
@@ -130,6 +161,7 @@ with c1:
         "pages/1_Overview.py",
     )
 
+
 with c2:
 
     action_card(
@@ -139,7 +171,10 @@ with c2:
         "pages/2_Video_Analytics.py",
     )
 
+
+
 c3, c4 = st.columns(2)
+
 
 with c3:
 
@@ -150,6 +185,7 @@ with c3:
         "pages/3_Comparison.py",
     )
 
+
 with c4:
 
     action_card(
@@ -159,17 +195,16 @@ with c4:
         "pages/4_Settings.py",
     )
 
-# ---------------------------------------------------------
-# RECENT ACTIVITY
-# ---------------------------------------------------------
 
-# ---------------------------------------------------------
+
+# =========================================================
 # RECENT ACTIVITY
-# ---------------------------------------------------------
+# =========================================================
 
 st.divider()
 
 st.subheader("🕒 Recent Activity")
+
 
 if not df.empty:
 
@@ -182,16 +217,21 @@ if not df.empty:
         .head(5)
     )
 
+
     for _, row in latest.iterrows():
+
         activity_card(row)
+
 
 else:
 
     st.info("No activity found.")
 
-# ---------------------------------------------------------
+render_command_palette()
+
+# =========================================================
 # FOOTER
-# ---------------------------------------------------------
+# =========================================================
 
 st.divider()
 
