@@ -1,0 +1,100 @@
+/* ==========================================================
+KPI CARDS
+========================================================== */
+
+.kpi-card{
+    background:#FFFFFF;
+    border-radius:22px;
+    padding:24px;
+    border:1px solid #E5E7EB;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    transition:.3s;
+}
+
+.kpi-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px rgba(0,0,0,.12);
+}
+
+.kpi-icon{
+    width:56px;
+    height:56px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:28px;
+    margin-bottom:18px;
+}
+
+.kpi-title{
+    color:#6B7280;
+    font-size:15px;
+    font-weight:600;
+}
+
+.kpi-value{
+    margin-top:12px;
+    font-size:36px;
+    font-weight:800;
+    color:#111827;
+}
+
+.kpi-change{
+    margin-top:18px;
+    display:inline-block;
+    background:#ECFDF5;
+    color:#16A34A;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+}
+
+/* ==========================================================
+SUMMARY CARD
+========================================================== */
+
+.summary-card{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    border:1px solid #E5E7EB;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+/* ==========================================================
+ACTION CARD
+========================================================== */
+
+.action-card{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    border:1px solid #E5E7EB;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    transition:.3s;
+}
+
+.action-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 18px 35px rgba(0,0,0,.10);
+}
+
+.action-icon{
+    font-size:34px;
+}
+
+.action-title{
+    margin-top:15px;
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+}
+
+.action-description{
+    margin-top:10px;
+    color:#6B7280;
+    line-height:1.7;
+}

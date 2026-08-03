@@ -31,37 +31,24 @@ Please sign in with your administrator credentials.
     col1, col2 = st.columns(2)
 
     with col1:
-
         if st.button(
             "Login",
             use_container_width=True,
         ):
-
             user = login_to_operations(
                 username,
                 password,
             )
 
             if user:
-
-                st.success(
-                    f"Welcome {user['full_name']}!"
-                )
-
+                st.session_state.command_palette_open = True
+                st.success("Login successful.")
                 st.rerun()
-
             else:
-
-                st.error(
-                    "Invalid username or password."
-                )
-
+                st.error("Invalid username or password.")
 
     with col2:
-
-        if st.button(
+        st.button(
             "Cancel",
             use_container_width=True,
-        ):
-
-            st.rerun()
+        )

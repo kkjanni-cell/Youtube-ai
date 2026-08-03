@@ -1,35 +1,102 @@
 import pandas as pd
 
+
 # -----------------------------------
 # SETTINGS
 # -----------------------------------
 
-PREDICTION_HORIZON = 2  # Number of future records
+TRACKING_INTERVAL_MINUTES = 5
+
+# User-facing prediction times
+PREDICTION_MINUTES = [
+    10,
+    30,
+    60,
+]
+
+
+# Convert minutes into records
+PREDICTION_HORIZONS = [
+    minutes // TRACKING_INTERVAL_MINUTES
+    for minutes in PREDICTION_MINUTES
+]
+
 
 # -----------------------------------
 # LOAD PROCESSED DATA
 # -----------------------------------
 
-df = pd.read_csv("data/processed_data.csv")
-
-# -----------------------------------
-# TARGET
-# -----------------------------------
-
-df["target_views"] = (
-    df.groupby("video_name")["views"]
-      .shift(-PREDICTION_HORIZON)
+df = pd.read_csv(
+    "data/processed_data.csv"
 )
 
-df["target_gain"] = (
-    df["target_views"] - df["views"]
+
+# Make sure data is ordered correctly
+
+df = df.sort_values(
+    [
+        "video_name",
+        "timestamp"
+    ]
+).reset_index(drop=True)
+
+
+
+training_rows = []
+
+
+# -----------------------------------
+# CREATE MULTI HORIZON DATASET
+# -----------------------------------
+
+for video_name, video_df in df.groupby("video_name"):
+
+    video_df = video_df.reset_index(drop=True)
+
+
+    for horizon in PREDICTION_HORIZONS:
+
+        future_views = (
+            video_df["views"]
+            .shift(-horizon)
+        )
+
+
+        temp = video_df.copy()
+
+        temp["target_views"] = future_views
+
+        temp["target_gain"] = (
+            temp["target_views"]
+            - temp["views"]
+        )
+
+
+        temp["prediction_horizon"] = horizon
+
+
+        training_rows.append(temp)
+
+
+
+# Combine everything
+
+training_df = pd.concat(
+    training_rows,
+    ignore_index=True
 )
 
-# Remove rows without future values
-df = df.dropna().reset_index(drop=True)
 
-# Horizon feature
-df["prediction_horizon"] = PREDICTION_HORIZON
+
+# Remove rows where future data does not exist
+
+training_df = (
+    training_df
+    .dropna()
+    .reset_index(drop=True)
+)
+
+
 
 # -----------------------------------
 # FEATURES
@@ -47,14 +114,17 @@ FEATURES = [
     "prediction_horizon"
 ]
 
+
 TARGETS = [
     "target_views",
     "target_gain"
 ]
 
-training_df = df[
+
+training_df = training_df[
     FEATURES + TARGETS
 ]
+
 
 # -----------------------------------
 # SAVE
@@ -65,8 +135,20 @@ training_df.to_csv(
     index=False
 )
 
-print("✅ Training dataset created")
 
-print(f"Rows: {len(training_df)}")
+print("\n✅ Multi Horizon Training Dataset Created")
 
-print(training_df.head())
+print("-----------------------------")
+
+print("Rows:", len(training_df))
+
+print(
+    "Horizons used:",
+    PREDICTION_HORIZONS
+)
+
+print("\nSample:")
+
+print(
+    training_df.head()
+)

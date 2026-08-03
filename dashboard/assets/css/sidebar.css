@@ -1,0 +1,94 @@
+/* ==========================================================
+SIDEBAR
+========================================================== */
+
+section[data-testid="stSidebar"]{
+    background:#FFFFFF;
+    border-right:1px solid #E5E7EB;
+}
+
+section[data-testid="stSidebar"] .block-container{
+    padding-top:1.5rem;
+    padding-left:1rem;
+    padding-right:1rem;
+}
+
+section[data-testid="stSidebarNav"]{
+    display:none;
+}
+
+/* ==========================================================
+LOGO
+========================================================== */
+
+.sidebar-logo{
+    font-size:30px;
+    font-weight:800;
+    color:#111827;
+}
+
+.sidebar-subtitle{
+    color:#6B7280;
+    font-size:14px;
+    margin-top:6px;
+    margin-bottom:15px;
+}
+
+/* ==========================================================
+TRACKER CARD
+========================================================== */
+
+.tracker-card{
+    background:white;
+    border-radius:18px;
+    padding:18px;
+    border:1px solid #E5E7EB;
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+.tracker-status{
+    font-weight:700;
+    margin-bottom:18px;
+}
+
+.online{
+    color:#16A34A;
+}
+
+.offline{
+    color:#DC2626;
+}
+
+.tracker-item{
+    margin-top:12px;
+}
+
+.tracker-label{
+    color:#6B7280;
+    font-size:13px;
+}
+
+.tracker-value{
+    font-size:18px;
+    font-weight:700;
+    color:#111827;
+}
+
+/* ==========================================================
+NAVIGATION
+========================================================== */
+
+.nav-title{
+    font-size:14px;
+    font-weight:700;
+    color:#6B7280;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:12px;
+}
+
+.sidebar-footer{
+    text-align:center;
+    color:#9CA3AF;
+    font-size:12px;
+}

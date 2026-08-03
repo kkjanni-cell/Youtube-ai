@@ -1,13 +1,12 @@
-import requests
+import os
 import sqlite3
-import os
+from pathlib import Path
 
+import requests
+from dotenv import load_dotenv
 
-# -----------------------------
-# ADD YOUR API KEY HERE
-# -----------------------------
-
-import os
+# Load tracker/.env
+load_dotenv(Path(__file__).parent / ".env")
 
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 
@@ -35,7 +34,16 @@ def get_video_details(video_id):
         "key": API_KEY
     }
 
+    print("=" * 60)
+    print("API KEY:", API_KEY)
+    print("Video ID:", video_id)
+
     response = requests.get(url, params=params)
+
+    print("Status Code:", response.status_code)
+    print("Response:")
+    print(response.text)
+    print("=" * 60)
 
     data = response.json()
 

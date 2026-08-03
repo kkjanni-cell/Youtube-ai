@@ -7,44 +7,60 @@ def dashboard_summary(
     total_snapshots,
     top_video,
 ):
+
     left, right = st.columns(2)
 
     with left:
+
         st.markdown(
             f"""
 <div class="summary-card">
 
-### 📡 Tracker Status
+<h3>📡 Tracker Status</h3>
 
-**{tracker_status}**
+<p>
+<b>{tracker_status}</b>
+</p>
 
-**Last Update**
-
+<p>
+<b>Last Update</b><br>
 {last_update}
+</p>
 
-**Total Snapshots**
-
+<p>
+<b>Total Snapshots</b><br>
 {total_snapshots:,}
+</p>
 
 </div>
 """,
             unsafe_allow_html=True,
         )
 
+
     with right:
+
         st.markdown(
             f"""
 <div class="summary-card">
 
-### 🔥 Top Growing Video
+<h3>🔥 Top Growing Video</h3>
 
-**{top_video['video_name']}**
+<p>
+<b>{top_video['video_name']}</b>
+</p>
 
+<p>
 👀 {int(top_video['views']):,} Views
+</p>
 
+<p>
 📈 +{int(top_video['view_gain']):,}
+</p>
 
+<p>
 ❤️ {int(top_video['likes']):,}
+</p>
 
 </div>
 """,

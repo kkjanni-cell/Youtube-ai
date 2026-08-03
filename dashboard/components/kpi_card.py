@@ -8,45 +8,35 @@ def kpi_card(
     change=None,
     color="#2563EB",
 ):
-    """
-    Premium KPI Card
-    """
+
+    change_html = ""
 
     if change:
         change_html = f"""
-        <div class="kpi-change">
-            ↗ {change}
-        </div>
-        """
-    else:
-        change_html = ""
+<div class="kpi-change">
+↗ {change}
+</div>
+"""
 
     st.markdown(
-        f"""
-        <div class="kpi-card">
+f"""
+<div class="kpi-card">
 
-            <div class="kpi-icon"
-                style="
-                    background:linear-gradient(
-                        135deg,
-                        {color},
-                        #3B82F6
-                    );
-                ">
-                {icon}
-            </div>
+<div class="kpi-icon" style="background:{color};">
+{icon}
+</div>
 
-            <div class="kpi-title">
-                {title}
-            </div>
+<div class="kpi-title">
+{title}
+</div>
 
-            <div class="kpi-value">
-                {value}
-            </div>
+<div class="kpi-value">
+{value}
+</div>
 
-            {change_html}
+{change_html}
 
-        </div>
-        """,
+</div>
+""",
         unsafe_allow_html=True,
     )

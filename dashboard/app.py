@@ -1,5 +1,7 @@
 import streamlit as st
 
+print("STEP 1")
+
 from style import load_css
 
 from components.sidebar import show_sidebar
@@ -44,15 +46,15 @@ st.set_page_config(
 # =========================================================
 
 load_css()
-
+print("STEP 2")
 initialize_session()
-
+print("STEP 3")
 initialize_command_palette()
-
+print("STEP 4")
 show_sidebar()
-
+print("STEP 5")
 df = load_data()
-
+print("STEP 6")
 
 # =========================================================
 # HERO

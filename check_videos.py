@@ -4,20 +4,21 @@ conn = sqlite3.connect("database/youtube.db")
 cursor = conn.cursor()
 
 cursor.execute("""
-SELECT video_id, video_name
+SELECT
+    video_id,
+    video_name,
+    start_time,
+    end_time,
+    tracking_interval,
+    status
 FROM videos
-ORDER BY video_name
 """)
 
 rows = cursor.fetchall()
 
-print("=" * 60)
-print(f"TOTAL VIDEOS : {len(rows)}")
-print("=" * 60)
+print(f"\nFound {len(rows)} videos\n")
 
-for i, row in enumerate(rows, start=1):
-    print(f"{i}. {row[1]}")
-    print(f"   {row[0]}")
-    print()
+for row in rows:
+    print(row)
 
 conn.close()
