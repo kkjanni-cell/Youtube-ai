@@ -229,7 +229,12 @@ else:
 
     st.info("No activity found.")
 
-render_command_palette()
+# =========================================================
+# COMMAND PALETTE
+# =========================================================
+
+if st.session_state.command_palette_open:
+    render_command_palette()
 
 # =========================================================
 # FOOTER

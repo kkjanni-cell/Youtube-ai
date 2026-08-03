@@ -45,20 +45,13 @@ def show_sidebar():
         # --------------------------------------------------
 
         st.markdown(
-            """
-            <div class="sidebar-logo">
-                🎬 <span>YouTube Analytics</span>
-            </div>
-
-            <div class="sidebar-subtitle">
-                Professional Dashboard
-            </div>
-            """,
-            unsafe_allow_html=True,
+          """
+           <div class="sidebar-logo">
+              🎬 <span>YouTube Analytics</span>
+           </div>
+         """,
+         unsafe_allow_html=True,
         )
-
-
-        st.markdown("<hr>", unsafe_allow_html=True)
 
 
         # --------------------------------------------------
@@ -80,16 +73,6 @@ def show_sidebar():
                 unsafe_allow_html=True,
             )
 
-        else:
-
-            st.markdown(
-                """
-                <div class="sidebar-subtitle">
-                    Public Dashboard
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
 
 
         st.markdown("<hr>", unsafe_allow_html=True)
