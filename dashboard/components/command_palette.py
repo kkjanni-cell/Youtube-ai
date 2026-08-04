@@ -16,6 +16,10 @@ def initialize_command_palette():
     if "show_add_video_form" not in st.session_state:
         st.session_state.show_add_video_form = False
 
+    # NEW
+    if "show_operations_login" not in st.session_state:
+        st.session_state.show_operations_login = False
+
 
 @st.dialog("⌘ Operations Console", width="large")
 def render_command_palette():

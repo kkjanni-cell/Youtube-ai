@@ -13,8 +13,10 @@ from components.command_palette import (
     initialize_command_palette,
     render_command_palette
 )
-from components.admin_dialog import show_admin_dialog
 from operations.session import initialize_session
+from operations.ui.login_dialog import show_login_dialog
+from components.browser_events_component import browser_events
+from components.global_keyboard import global_keyboard
 
 from utils.database import (
     load_data,
@@ -40,13 +42,13 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
 # =========================================================
 # LOAD
 # =========================================================
 
 load_css()
 print("STEP 2")
+global_keyboard()
 initialize_session()
 print("STEP 3")
 initialize_command_palette()
@@ -77,13 +79,6 @@ all in one professional dashboard.
 
 
 st.write("")
-# -----------------------------------------
-# TEMPORARY ADMIN BUTTON
-# -----------------------------------------
-
-if st.button("🛠 Admin Access"):
-
-    show_admin_dialog()
 
 # =========================================================
 # LIVE PERFORMANCE
@@ -230,11 +225,20 @@ else:
     st.info("No activity found.")
 
 # =========================================================
+# OPERATIONS LOGIN
+# =========================================================
+
+if st.session_state.show_operations_login:
+    st.session_state.show_operations_login = False
+    show_login_dialog()
+
+# =========================================================
 # COMMAND PALETTE
 # =========================================================
 
 if st.session_state.command_palette_open:
     render_command_palette()
+
 
 # =========================================================
 # FOOTER
