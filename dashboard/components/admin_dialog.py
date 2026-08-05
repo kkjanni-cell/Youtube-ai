@@ -33,7 +33,7 @@ Please sign in with your administrator credentials.
     with col1:
         if st.button(
             "Login",
-            use_container_width=True,
+            width="stretch",
         ):
             user = login_to_operations(
                 username,
@@ -50,5 +50,5 @@ Please sign in with your administrator credentials.
     with col2:
         st.button(
             "Cancel",
-            use_container_width=True,
+            width="stretch",
         )

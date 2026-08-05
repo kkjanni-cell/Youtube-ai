@@ -4,11 +4,13 @@ import streamlit.components.v1 as components
 
 def keyboard_shortcuts():
 
-    # Hide trigger button but keep it available for JS click
+    # Scope the "hide this button" CSS to ONLY the trigger button's
+    # own container (st-key-keyboard_trigger_container), instead of
+    # every button in the app (div[data-testid="stButton"] button).
     st.markdown(
         """
         <style>
-        div[data-testid="stButton"] button {
+        .st-key-keyboard_trigger_container button {
             opacity: 0;
             position: fixed;
             width: 1px;
@@ -21,10 +23,15 @@ def keyboard_shortcuts():
         unsafe_allow_html=True,
     )
 
-    trigger = st.button(
-        "⌨️ Keyboard Trigger",
-        key="keyboard_shortcut_trigger",
-    )
+    # Wrap ONLY the trigger button in a uniquely-keyed container so the
+    # CSS above can target it specifically, without affecting any other
+    # button rendered elsewhere in the app (e.g. inside dialogs).
+    with st.container(key="keyboard_trigger_container"):
+
+        trigger = st.button(
+            "⌨️ Keyboard Trigger",
+            key="keyboard_shortcut_trigger",
+        )
 
     if trigger:
         st.session_state.command_palette_open = True

@@ -7,6 +7,7 @@ from operations.login import login_to_operations
 def show_login_dialog():
     """
     Operations login dialog.
+    Responsible only for authentication.
     """
 
     st.write(
@@ -30,7 +31,8 @@ def show_login_dialog():
 
         if st.button(
             "🔐 Login",
-            use_container_width=True,
+            key="operations_login_button",
+            width="stretch",
         ):
 
             user = login_to_operations(
@@ -40,11 +42,14 @@ def show_login_dialog():
 
             if user:
 
-                st.success("Login successful.")
+                st.success(
+                    "Login successful."
+                )
 
-                # Open the console after login
-                st.session_state.command_palette_open = True
-
+                # Don't change command_palette_open here.
+                # global_console.py will automatically
+                # render the Operations Console because
+                # it is still True.
                 st.rerun()
 
             else:
@@ -57,7 +62,8 @@ def show_login_dialog():
 
         if st.button(
             "Cancel",
-            use_container_width=True,
+            key="operations_cancel_button",
+            width="stretch",
         ):
 
             st.session_state.command_palette_open = False

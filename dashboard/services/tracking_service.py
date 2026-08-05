@@ -2,12 +2,23 @@ from __future__ import annotations
 
 import re
 import sqlite3
+import sys
 from datetime import datetime
 from pathlib import Path
 
+# ---------------------------------------------------------
+# Make the project root importable so that we can import
+# modules from the top-level tracker package.
+# ---------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from tracker.youtube_api import get_video_details
 
-DB_PATH = Path(__file__).resolve().parents[2] / "database" / "youtube.db"
+DB_PATH = PROJECT_ROOT / "database" / "youtube.db"
 
 
 def get_connection():
@@ -35,6 +46,7 @@ def extract_video_id(value: str) -> str | None:
 
     for pattern in patterns:
         match = re.search(pattern, value)
+
         if match:
             return match.group(1)
 
@@ -42,6 +54,7 @@ def extract_video_id(value: str) -> str | None:
 
 
 def video_exists(video_id: str) -> bool:
+
     conn = get_connection()
     cur = conn.cursor()
 

@@ -1,6 +1,6 @@
 import streamlit as st
-
-print("STEP 1")
+import os
+print("Running app.py from:", os.path.abspath(__file__))
 
 from style import load_css
 
@@ -11,7 +11,6 @@ from components.action_card import action_card
 from components.activity_card import activity_card
 from components.global_console import setup_global_console
 from operations.session import initialize_session
-from operations.ui.login_dialog import show_login_dialog
 from components.keyboard_shortcuts import keyboard_shortcuts
 
 from utils.database import (
@@ -218,14 +217,6 @@ if not df.empty:
 else:
 
     st.info("No activity found.")
-
-# =========================================================
-# OPERATIONS LOGIN
-# =========================================================
-
-if st.session_state.show_operations_login:
-
-    show_login_dialog()
 
 
 # =========================================================

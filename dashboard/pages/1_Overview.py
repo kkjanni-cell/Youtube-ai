@@ -38,38 +38,6 @@ show_sidebar()
 setup_global_console()
 keyboard_shortcuts()
 
-
-# =====================================================
-# PAGE HEADER + FILTER
-# =====================================================
-
-header_col, filter_col = st.columns(
-    [3, 1]
-)
-
-
-with header_col:
-
-    section_header(
-        "📊 Overview Dashboard",
-        "Real-time performance YouTube videos.",
-    )
-
-
-with filter_col:
-
-    st.write("")
-
-    st.markdown(
-        """
-        <div class="filter-label">
-        🎥 Video Filter
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
 # =====================================================
 # LOAD DATA
 # =====================================================
@@ -120,7 +88,7 @@ with filter_col:
 
 
     selected_video = st.selectbox(
-        "",
+        "Video Filter",
         video_list,
         label_visibility="collapsed"
     )

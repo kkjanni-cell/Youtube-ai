@@ -21,7 +21,7 @@ def show_add_video_dialog():
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Add Video", use_container_width=True):
+        if st.button("Add Video", width="stretch"):
 
             if not url.strip():
                 st.warning("Please enter a YouTube URL or Video ID.")
@@ -42,5 +42,5 @@ def show_add_video_dialog():
                 st.error(message)
 
     with col2:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width="stretch"):
             st.rerun()
