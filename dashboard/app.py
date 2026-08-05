@@ -9,14 +9,10 @@ from components.cards import show_overview_cards
 from components.dashboard_summary import dashboard_summary
 from components.action_card import action_card
 from components.activity_card import activity_card
-from components.command_palette import (
-    initialize_command_palette,
-    render_command_palette
-)
+from components.global_console import setup_global_console
 from operations.session import initialize_session
 from operations.ui.login_dialog import show_login_dialog
-from components.browser_events_component import browser_events
-from components.global_keyboard import global_keyboard
+from components.keyboard_shortcuts import keyboard_shortcuts
 
 from utils.database import (
     load_data,
@@ -47,11 +43,10 @@ st.set_page_config(
 # =========================================================
 
 load_css()
-print("STEP 2")
-global_keyboard()
 initialize_session()
 print("STEP 3")
-initialize_command_palette()
+setup_global_console()
+keyboard_shortcuts()
 print("STEP 4")
 show_sidebar()
 print("STEP 5")
@@ -229,15 +224,8 @@ else:
 # =========================================================
 
 if st.session_state.show_operations_login:
-    st.session_state.show_operations_login = False
+
     show_login_dialog()
-
-# =========================================================
-# COMMAND PALETTE
-# =========================================================
-
-if st.session_state.command_palette_open:
-    render_command_palette()
 
 
 # =========================================================

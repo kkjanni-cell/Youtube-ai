@@ -17,6 +17,8 @@ from components.charts import (
     likes_chart,
     comments_chart,
 )
+from components.global_console import setup_global_console
+from components.keyboard_shortcuts import keyboard_shortcuts
 
 # ----------------------------------------------------
 # PAGE CONFIG
@@ -30,6 +32,8 @@ st.set_page_config(
 
 load_css()
 show_sidebar()
+setup_global_console()
+keyboard_shortcuts()
 
 st.title("📺 Video Analytics")
 st.caption("Analyze the performance of an individual YouTube video")

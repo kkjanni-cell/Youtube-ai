@@ -10,35 +10,34 @@ from operations.session import (
 
 
 def initialize_command_palette():
+
     if "command_palette_open" not in st.session_state:
         st.session_state.command_palette_open = False
 
     if "show_add_video_form" not in st.session_state:
         st.session_state.show_add_video_form = False
 
-    # NEW
     if "show_operations_login" not in st.session_state:
         st.session_state.show_operations_login = False
 
 
+
 @st.dialog("⌘ Operations Console", width="large")
 def render_command_palette():
-    """
-    Operations Console
-    """
 
-    if not st.session_state.command_palette_open:
-        return
 
-    if not is_authenticated():
-        st.warning("Please log in first.")
-        return
+
 
     session = get_session()
 
-    st.success(f"Welcome, {session['full_name']}")
+
+    st.success(
+        f"Welcome, {session['full_name']}"
+    )
+
 
     st.divider()
+
 
     # =====================================================
     # ADD VIDEO
@@ -48,13 +47,19 @@ def render_command_palette():
         "➕ Add YouTube Video",
         use_container_width=True,
     ):
+
         st.session_state.show_add_video_form = True
+
+
 
     if st.session_state.show_add_video_form:
 
         st.divider()
 
-        st.subheader("➕ Add YouTube Video")
+        st.subheader(
+            "➕ Add YouTube Video"
+        )
+
 
         url = st.text_input(
             "YouTube URL or Video ID",
@@ -62,9 +67,14 @@ def render_command_palette():
             placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         )
 
-        st.write("### 🗓 Tracking Schedule")
+
+        st.write(
+            "### 🗓 Tracking Schedule"
+        )
+
 
         left, right = st.columns(2)
+
 
         with left:
 
@@ -73,6 +83,7 @@ def render_command_palette():
                 value=datetime.now().date(),
                 key="track_start_date",
             )
+
 
             start_time = st.time_input(
                 "Start Time",
@@ -83,6 +94,7 @@ def render_command_palette():
                 key="track_start_time",
             )
 
+
         with right:
 
             end_date = st.date_input(
@@ -90,6 +102,7 @@ def render_command_palette():
                 value=datetime.now().date(),
                 key="track_end_date",
             )
+
 
             end_time = st.time_input(
                 "End Time",
@@ -100,29 +113,44 @@ def render_command_palette():
                 key="track_end_time",
             )
 
+
+
         interval = st.radio(
             "Tracking Interval",
             options=[1, 5, 10],
             index=1,
             horizontal=True,
-            format_func=lambda x: f"{x} Minute{'s' if x > 1 else ''}",
+            format_func=lambda x:
+                f"{x} Minute{'s' if x > 1 else ''}",
             key="tracking_interval",
         )
+
+
 
         start_datetime = datetime.combine(
             start_date,
             start_time,
         )
 
+
         end_datetime = datetime.combine(
             end_date,
             end_time,
         )
 
+
+
         if end_datetime <= start_datetime:
-            st.error("End time must be after the start time.")
+
+            st.error(
+                "End time must be after the start time."
+            )
+
+
 
         col1, col2 = st.columns(2)
+
+
 
         with col1:
 
@@ -131,17 +159,25 @@ def render_command_palette():
                 use_container_width=True,
             ):
 
+
                 if not url.strip():
 
-                    st.error("Please enter a YouTube URL or Video ID.")
+                    st.error(
+                        "Please enter a YouTube URL or Video ID."
+                    )
+
 
                 elif end_datetime <= start_datetime:
 
-                    st.error("Please correct the schedule.")
+                    st.error(
+                        "Please correct the schedule."
+                    )
+
 
                 else:
 
                     from services.tracking_service import add_video
+
 
                     success, message = add_video(
                         url=url,
@@ -149,6 +185,7 @@ def render_command_palette():
                         end_time=end_datetime,
                         tracking_interval=interval,
                     )
+
 
                     if success:
 
@@ -158,9 +195,12 @@ def render_command_palette():
 
                         st.rerun()
 
+
                     else:
 
                         st.error(message)
+
+
 
         with col2:
 
@@ -173,23 +213,32 @@ def render_command_palette():
 
                 st.rerun()
 
+
+
     # =====================================================
     # REMOVE TRACKING
     # =====================================================
 
     st.divider()
 
+
     if st.button(
         "➖ Remove Tracking",
         use_container_width=True,
     ):
-        st.info("Coming in the next step.")
+
+        st.info(
+            "Coming in the next step."
+        )
+
+
 
     # =====================================================
     # LOGOUT
     # =====================================================
 
     st.divider()
+
 
     if st.button(
         "🚪 Logout",
@@ -199,6 +248,27 @@ def render_command_palette():
         logout()
 
         st.session_state.command_palette_open = False
+
+        st.session_state.show_add_video_form = False
+
+        st.rerun()
+
+
+
+    # =====================================================
+    # CLOSE CONSOLE
+    # =====================================================
+
+    st.divider()
+
+
+    if st.button(
+        "Close Console",
+        use_container_width=True,
+    ):
+
+        st.session_state.command_palette_open = False
+
         st.session_state.show_add_video_form = False
 
         st.rerun()

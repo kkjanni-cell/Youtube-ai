@@ -22,6 +22,8 @@ from style import load_css
 from components.cards import show_overview_cards
 from components.section import section_header
 from components.charts import overview_growth_chart
+from components.global_console import setup_global_console
+from components.keyboard_shortcuts import keyboard_shortcuts
 
 
 st.set_page_config(
@@ -33,6 +35,8 @@ st.set_page_config(
 
 load_css()
 show_sidebar()
+setup_global_console()
+keyboard_shortcuts()
 
 
 # =====================================================
