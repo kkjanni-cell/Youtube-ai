@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
+st_autorefresh(interval=5000, key="datarefresh")
 import pandas as pd
 
 from style import load_css

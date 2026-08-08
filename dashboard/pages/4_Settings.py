@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
+st_autorefresh(interval=5000, key="datarefresh")
 from style import load_css
 from components.sidebar import show_sidebar
 from components.global_console import setup_global_console

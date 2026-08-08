@@ -145,14 +145,16 @@ def should_track(video):
 # SAVE HISTORY
 # --------------------------------------------------
 
-def save_history(data):
+def save_history(data, tracking_interval=None):
 
     conn = get_connection()
     cursor = conn.cursor()
 
     now = datetime.now(IST)
 
-    rounded_minute = (now.minute // 5) * 5
+    interval = tracking_interval or 5
+
+    rounded_minute = (now.minute // interval) * interval
 
     rounded_time = now.replace(
         minute=rounded_minute,
@@ -162,13 +164,20 @@ def save_history(data):
 
     timestamp = rounded_time.strftime("%Y-%m-%d %H:%M:%S")
 
+    # IMPORTANT: only look at rows strictly BEFORE the current bucket.
+    # If we ever run twice inside the same bucket (cron jitter, a slow
+    # API call, a manual re-run, etc.) this must NOT pick up the row
+    # we just wrote for *this* bucket - otherwise the gain gets computed
+    # against itself, the real gain for the bucket gets overwritten/lost,
+    # and it looks like views "carry over" into the next tracked time.
     cursor.execute("""
         SELECT views
         FROM view_history
         WHERE video_id = ?
+        AND timestamp < ?
         ORDER BY timestamp DESC
         LIMIT 1
-    """, (data["video_id"],))
+    """, (data["video_id"], timestamp))
 
     previous = cursor.fetchone()
 
@@ -191,6 +200,10 @@ def save_history(data):
 
     if existing:
 
+        # Bucket already has a row (this is a second/duplicate check inside
+        # the same interval). Refresh the latest view count, but keep the
+        # gain anchored to the same previous-interval reference computed
+        # above - never to the row we're about to overwrite.
         cursor.execute("""
             UPDATE view_history
             SET
@@ -285,7 +298,8 @@ if __name__ == "__main__":
 
         update_video_details(data)
 
-        save_history(data)
+        interval = video["tracking_interval"] if "tracking_interval" in video.keys() else None
+        save_history(data, tracking_interval=interval)
 
         print(f"✅ {data['title']}")
         print("----------------------------------")

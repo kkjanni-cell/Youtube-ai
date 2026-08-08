@@ -33,4 +33,5 @@ database/*.db
 
 # Build
 dist/
-build/
+build/tracker_log.txt
+tracker/tracker_log.txt

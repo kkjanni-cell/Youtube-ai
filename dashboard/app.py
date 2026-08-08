@@ -3,7 +3,7 @@ import os
 print("Running app.py from:", os.path.abspath(__file__))
 
 from style import load_css
-
+from streamlit_autorefresh import st_autorefresh
 from components.sidebar import show_sidebar
 from components.cards import show_overview_cards
 from components.dashboard_summary import dashboard_summary
@@ -12,6 +12,7 @@ from components.activity_card import activity_card
 from components.global_console import setup_global_console
 from operations.session import initialize_session
 from components.keyboard_shortcuts import keyboard_shortcuts
+from services.schedular import start_scheduler
 
 from utils.database import (
     load_data,
@@ -36,7 +37,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
+st_autorefresh(interval=5000, key="datarefresh")
 # =========================================================
 # LOAD
 # =========================================================

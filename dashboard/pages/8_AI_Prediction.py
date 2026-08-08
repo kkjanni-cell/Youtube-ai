@@ -2,6 +2,8 @@ import sys
 from pathlib import Path
 
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
+st_autorefresh(interval=5000, key="datarefresh")
 import pandas as pd
 import plotly.graph_objects as go
 
