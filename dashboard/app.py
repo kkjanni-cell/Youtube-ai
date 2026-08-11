@@ -44,6 +44,11 @@ st_autorefresh(interval=5000, key="datarefresh")
 
 load_css()
 initialize_session()
+# Only run the in-app background tracker when deployed on Render.
+# Locally, launchd already handles tracking - running both would
+# cause duplicate/conflicting writes.
+if os.getenv("RUN_SCHEDULER") == "true":
+    start_scheduler()
 print("STEP 3")
 setup_global_console()
 keyboard_shortcuts()
