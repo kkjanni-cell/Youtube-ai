@@ -12,6 +12,7 @@ PREDICTION_MINUTES = [
     10,
     30,
     60,
+    120,
 ]
 
 
