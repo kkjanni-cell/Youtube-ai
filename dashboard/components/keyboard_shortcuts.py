@@ -4,9 +4,6 @@ import streamlit.components.v1 as components
 
 def keyboard_shortcuts():
 
-    # Scope the "hide this button" CSS to ONLY the trigger button's
-    # own container (st-key-keyboard_trigger_container), instead of
-    # every button in the app (div[data-testid="stButton"] button).
     st.markdown(
         """
         <style>
@@ -23,9 +20,6 @@ def keyboard_shortcuts():
         unsafe_allow_html=True,
     )
 
-    # Wrap ONLY the trigger button in a uniquely-keyed container so the
-    # CSS above can target it specifically, without affecting any other
-    # button rendered elsewhere in the app (e.g. inside dialogs).
     with st.container(key="keyboard_trigger_container"):
 
         trigger = st.button(
@@ -44,49 +38,64 @@ def keyboard_shortcuts():
 
         const doc = window.parent.document;
 
-        if (!window.keyboardListenerInstalled) {
+        // Streamlit recreates this component's iframe on every rerun
+        // (including every auto-refresh cycle). When an iframe is torn
+        // down, any listener it registered - even one attached to the
+        // parent page - silently stops working. So instead of only
+        // guarding against re-adding a listener (which left us with
+        // zero working listeners after the first refresh), we
+        // explicitly remove whatever the previous listener was and
+        // install a fresh, currently-alive one every single time.
+        // This keeps exactly one working listener at all times, never
+        // stacks duplicates, and never goes silently dead.
 
-            window.keyboardListenerInstalled = true;
+        if (window.parent.__keyboardHandler) {
+            doc.removeEventListener(
+                "keydown",
+                window.parent.__keyboardHandler
+            );
+        }
 
-            doc.addEventListener("keydown", function(e){
+        function handleShortcutKeydown(e) {
 
-                const isMac = navigator.platform
-                    .toUpperCase()
-                    .includes("MAC");
+            const isMac = navigator.platform
+                .toUpperCase()
+                .includes("MAC");
 
-                const modifier = isMac
-                    ? e.metaKey
-                    : e.ctrlKey;
+            const modifier = isMac
+                ? e.metaKey
+                : e.ctrlKey;
 
-                if (
-                    modifier &&
-                    e.shiftKey &&
-                    e.key.toLowerCase() === "k"
-                ) {
+            if (
+                modifier &&
+                e.shiftKey &&
+                e.key.toLowerCase() === "k"
+            ) {
 
-                    e.preventDefault();
+                e.preventDefault();
 
-                    const buttons = Array.from(
-                        doc.querySelectorAll("button")
-                    );
+                const buttons = Array.from(
+                    doc.querySelectorAll("button")
+                );
 
-                    const target = buttons.find(
-                        b => b.innerText.includes("Keyboard Trigger")
-                    );
+                const target = buttons.find(
+                    b => b.innerText.includes("Keyboard Trigger")
+                );
 
-                    if (target) {
+                if (target) {
 
-                        console.log("⌘ + Shift + K detected");
+                    console.log("⌘ + Shift + K detected");
 
-                        target.click();
-
-                    }
+                    target.click();
 
                 }
 
-            });
+            }
 
         }
+
+        window.parent.__keyboardHandler = handleShortcutKeydown;
+        doc.addEventListener("keydown", handleShortcutKeydown);
 
         </script>
         """,

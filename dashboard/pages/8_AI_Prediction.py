@@ -5,7 +5,10 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 st_autorefresh(interval=5000, key="datarefresh")
 import pandas as pd
+from utils.database import load_data
+from utils.video_selector import select_video
 import plotly.graph_objects as go
+
 
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -92,10 +95,7 @@ col1, col2 = st.columns(2)
 
 with col1:
 
-    selected_video = st.selectbox(
-        "🎥 Select Video",
-        videos["video_name"].tolist()
-    )
+    selected_video = select_video(df, label="🎥 Select Video")
 
 
 
@@ -120,6 +120,8 @@ with col2:
         "30 Minutes": 30,
 
         "1 Hour": 60,
+
+        "2 Hours": 120,
 
     }
 
@@ -302,10 +304,11 @@ details = {
     "Prediction Time":
         f"{result['prediction_minutes']} minutes",
 
-    "Model Horizon":
-        f"{result['prediction_horizon']} records"
+    "Error Margin":
+        f"± {(result['prediction_range']['upper'] - result['prediction_range']['lower']) // 2:,} views"
 
 }
+
 
 
 

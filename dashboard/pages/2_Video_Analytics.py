@@ -6,6 +6,7 @@ import pandas as pd
 from style import load_css
 from components.sidebar import show_sidebar
 from utils.database import load_data
+from utils.video_selector import select_video
 from utils.analytics import calculate_metrics
 
 from components.cards import (
@@ -59,10 +60,7 @@ st.subheader("🔎 Filters")
 col1, col2 = st.columns(2)
 
 with col1:
-    selected = st.selectbox(
-        "Select Video",
-        sorted(df["video_name"].unique())
-    )
+    selected = select_video(df, label="Select Video")
 
 with col2:
     days = st.selectbox(

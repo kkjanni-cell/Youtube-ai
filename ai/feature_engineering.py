@@ -32,8 +32,10 @@ conn.close()
 
 df["timestamp"] = pd.to_datetime(df["timestamp"])
 
+# Group by video_id (the real unique key) - not video_name,
+# since two different videos could share the same title.
 df = df.sort_values(
-    ["video_name", "timestamp"]
+    ["video_id", "timestamp"]
 ).reset_index(drop=True)
 
 # -----------------------
@@ -42,24 +44,24 @@ df = df.sort_values(
 
 # Views gained since previous record
 df["growth_1_record"] = (
-    df.groupby("video_name")["views"]
+    df.groupby("video_id")["views"]
       .diff()
 )
 
 # Average growth over last 5 records
 df["growth_5_records"] = (
-    df.groupby("video_name")["growth_1_record"]
+    df.groupby("video_id")["growth_1_record"]
       .transform(lambda x: x.rolling(5, min_periods=1).mean())
 )
 
 df["growth_15_records"] = (
-    df.groupby("video_name")["growth_1_record"]
+    df.groupby("video_id")["growth_1_record"]
       .transform(lambda x: x.rolling(15, min_periods=1).mean())
 )
 
 # Growth acceleration
 df["acceleration"] = (
-    df.groupby("video_name")["growth_1_record"]
+    df.groupby("video_id")["growth_1_record"]
       .diff()
 )
 
@@ -73,9 +75,9 @@ df["comment_ratio"] = (
     df["comments"] / df["views"]
 )
 
-# Hours since tracking started
+# Hours since tracking started (per video_id, not video_name)
 df["hours_from_start"] = (
-    df.groupby("video_name")["timestamp"]
+    df.groupby("video_id")["timestamp"]
       .transform(lambda x: (x - x.min()).dt.total_seconds() / 3600)
 )
 

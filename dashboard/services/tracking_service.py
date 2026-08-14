@@ -137,3 +137,82 @@ def add_video(
         True,
         f"'{details['title']}' scheduled successfully.",
     )
+
+# ---------------------------------------------------------
+# ADD THESE TO THE END OF services/tracking_service.py
+# (keep everything already in that file - just append this)
+# ---------------------------------------------------------
+
+
+def get_all_videos():
+    """
+    Return every tracked video with its current status,
+    most recently added first.
+    """
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT
+            video_id,
+            video_name,
+            status,
+            start_time,
+            end_time,
+            tracking_interval,
+            added_on
+        FROM videos
+        ORDER BY added_on DESC
+        """
+    )
+
+    rows = cur.fetchall()
+    conn.close()
+
+    columns = [
+        "video_id",
+        "video_name",
+        "status",
+        "start_time",
+        "end_time",
+        "tracking_interval",
+        "added_on",
+    ]
+
+    return [dict(zip(columns, row)) for row in rows]
+
+
+def stop_tracking(video_id: str):
+    """
+    Soft-stop a video: keeps all existing view_history data,
+    just marks it so the tracker skips it on future runs
+    (track_views.py only picks up videos with status
+    'scheduled' or 'tracking').
+
+    Returns:
+        (success: bool, message: str)
+    """
+
+    if not video_exists(video_id):
+        return False, "This video is not currently tracked."
+
+    now = datetime.now().isoformat(timespec="seconds")
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        UPDATE videos
+        SET status = 'stopped', updated_at = ?
+        WHERE video_id = ?
+        """,
+        (now, video_id),
+    )
+
+    conn.commit()
+    conn.close()
+
+    return True, "Tracking stopped for this video. Its history is kept."

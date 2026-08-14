@@ -2,6 +2,7 @@ from datetime import datetime
 
 import streamlit as st
 
+
 from operations.session import (
     get_session,
     is_authenticated,
@@ -111,13 +112,15 @@ def render_command_palette():
                 ).time(),
                 key="track_end_time",
             )
-
+        from services.settings_service import get_default_tracking_interval
+        default_interval = get_default_tracking_interval()
+            
         interval = st.radio(
-            "Tracking Interval",
-            options=[1, 5, 10],
-            index=1,
-            horizontal=True,
-            format_func=lambda x: (
+        "Tracking Interval",
+        options=[1, 5, 10],
+        index=[1, 5, 10].index(default_interval),
+        horizontal=True,
+        format_func=lambda x: (
                 f"{x} Minute{'s' if x > 1 else ''}"
             ),
             key="tracking_interval",

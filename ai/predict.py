@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from pathlib import Path
 
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 DB_PATH = ROOT / "database" / "youtube.db"
 MODEL_PATH = ROOT / "models" / "youtube_predictor.pkl"
+MAE_PATH = ROOT / "models" / "mae_by_horizon.json"
 
 
 # --------------------------------------------------
@@ -21,8 +23,22 @@ MODEL_PATH = ROOT / "models" / "youtube_predictor.pkl"
 
 MODEL = joblib.load(MODEL_PATH)
 
-# Latest model MAE from training result
-MODEL_MAE = 13298
+with open(MAE_PATH) as f:
+    MAE_BY_HORIZON = {int(k): v for k, v in json.load(f).items()}
+
+# Fallback if a requested horizon has no exact match in the trained
+# set (shouldn't normally happen since the dashboard dropdown only
+# offers trained horizons, but this avoids a crash if it ever does)
+DEFAULT_MAE = sum(MAE_BY_HORIZON.values()) / len(MAE_BY_HORIZON)
+
+
+def mae_for_horizon(minutes_ahead: int) -> float:
+    if minutes_ahead in MAE_BY_HORIZON:
+        return MAE_BY_HORIZON[minutes_ahead]
+
+    # Pick the closest trained horizon instead of defaulting blindly
+    closest = min(MAE_BY_HORIZON.keys(), key=lambda h: abs(h - minutes_ahead))
+    return MAE_BY_HORIZON.get(closest, DEFAULT_MAE)
 
 
 # --------------------------------------------------
@@ -183,22 +199,10 @@ def predict_views(
     row = latest.to_dict()
 
 
-    # Convert minutes to tracker records
-    # Tracker runs every 5 minutes
-
-    TRACKING_INTERVAL_MINUTES = 5
-
-
-    prediction_horizon = (
-        minutes_ahead
-        //
-        TRACKING_INTERVAL_MINUTES
-    )
-
-
-    row["prediction_horizon"] = (
-        prediction_horizon
-    )
+    # prediction_horizon is now in MINUTES directly, matching how
+    # the model was trained - no more row-count conversion that
+    # assumed a fixed 5-minute tracking interval.
+    row["prediction_horizon"] = minutes_ahead
 
 
     X = pd.DataFrame(
@@ -231,9 +235,11 @@ def predict_views(
 
     # --------------------------------------------------
     # CONFIDENCE + RANGE
+    # Uses the MAE trained specifically for this horizon, not a
+    # single blanket number for every prediction distance.
     # --------------------------------------------------
 
-    error_margin = MODEL_MAE
+    error_margin = mae_for_horizon(minutes_ahead)
 
 
     lower_bound = max(
@@ -287,7 +293,7 @@ def predict_views(
 
         "predicted_views": predicted_views,
 
-        "prediction_horizon": prediction_horizon,
+        "prediction_horizon": minutes_ahead,
 
         "prediction_minutes": minutes_ahead,
 
